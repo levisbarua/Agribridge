@@ -2,7 +2,7 @@
 
 AgriBridge Africa is a comprehensive, modern web platform designed to connect agricultural stakeholders across the continent. It serves as a unified ecosystem connecting **Farmers**, **Buyers** (Retail/Wholesalers), **Logistics Providers**, and **Warehouse Owners**.
 
-![AgriBridge Africa Dashboard](https://loremflickr.com/800/400/agriculture,africa) *(Replace with actual screenshot)*
+
 
 ## 🌟 Key Features
 
