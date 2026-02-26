@@ -1,0 +1,9 @@
+{
+  "name": "AgriBridge Africa",
+  "description": "A comprehensive digital marketplace and logistics platform connecting smallholder farmers directly to buyers and transport services to minimize post-harvest loss.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation",
+    "microphone"
+  ]
+}

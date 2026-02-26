@@ -1,0 +1,192 @@
+import { GoogleGenAI } from "@google/genai";
+
+const apiKey = process.env.API_KEY || process.env.VITE_GEMINI_API_KEY || '';
+let ai: GoogleGenAI | null = null;
+try {
+  if (apiKey) {
+    ai = new GoogleGenAI({ apiKey });
+  }
+} catch (e) {
+  console.warn("Failed to initialize GoogleGenAI:", e);
+}
+
+export const getShelfLifePrediction = async (productName: string, harvestDate: string, additionalInfo: string) => {
+  if (!ai || !apiKey) return "AI Service Unavailable: Missing API Key";
+
+  try {
+    const prompt = `
+      I am a farmer in Africa listing a product on a marketplace.
+      Product: ${productName}
+      Harvest Date: ${harvestDate}
+      Details: ${additionalInfo}
+      
+      Please provide a short, concise analysis (max 3 sentences) covering:
+      1. Estimated shelf life remaining (in days).
+      2. One critical storage tip to extend freshness without electricity if possible.
+    `;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-flash-lite-latest',
+      contents: prompt,
+    });
+    return response.text;
+  } catch (error) {
+    console.error("Gemini API Error:", error);
+    return "Could not generate prediction at this time.";
+  }
+};
+
+export const getAgriAdvice = async (
+  query: string,
+  options: {
+    useSearch?: boolean;
+    useMaps?: boolean;
+    useThinking?: boolean;
+    location?: { lat: number; lng: number }
+  } = {}
+) => {
+  if (!ai || !apiKey) return { text: "AI Service Unavailable: Missing API Key" };
+
+  try {
+    if (options.useThinking) {
+      // Use gemini-3-pro-preview for Deep Thinking
+      // Setting thinkingBudget to max (32768) as requested for complex queries
+      const response = await ai.models.generateContent({
+        model: 'gemini-3-pro-preview',
+        contents: query,
+        config: {
+          thinkingConfig: { thinkingBudget: 32768 }
+        },
+      });
+      return { text: response.text };
+
+    } else if (options.useMaps) {
+      // Use gemini-2.5-flash for Google Maps Grounding
+      const config: any = {
+        tools: [{ googleMaps: {} }],
+      };
+
+      // Pass user location if available to improve relevance
+      if (options.location) {
+        config.toolConfig = {
+          retrievalConfig: {
+            latLng: {
+              latitude: options.location.lat,
+              longitude: options.location.lng
+            }
+          }
+        };
+      }
+
+      const response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: query,
+        config: config,
+      });
+
+      // Extract sources (Maps & Web)
+      const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
+      const sources = chunks.map((c: any) => {
+        if (c.web?.uri) return { title: c.web.title, uri: c.web.uri, type: 'web' };
+        // The maps chunk usually contains title and uri within the maps object
+        if (c.maps?.uri) return { title: c.maps.title, uri: c.maps.uri, type: 'map' };
+        // Fallback for review snippets or other map data
+        if (c.maps?.placeAnswerSources?.length > 0) {
+          const place = c.maps.placeAnswerSources[0];
+          return { title: place.title || 'Google Maps Place', uri: place.uri, type: 'map' };
+        }
+        return null;
+      }).filter((s: any) => s);
+
+      const uniqueSources = Array.from(new Map(sources.map((s: any) => [s.uri, s])).values());
+      return { text: response.text, sources: uniqueSources as { title: string, uri: string, type: 'web' | 'map' }[] };
+
+    } else if (options.useSearch) {
+      // Use gemini-3-flash-preview for Google Search Grounding
+      const response = await ai.models.generateContent({
+        model: 'gemini-3-flash-preview',
+        contents: query,
+        config: {
+          tools: [{ googleSearch: {} }],
+        },
+      });
+
+      const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
+      const sources = chunks
+        .map((chunk: any) => chunk.web?.uri ? { title: chunk.web.title, uri: chunk.web.uri, type: 'web' } : null)
+        .filter((s: any) => s !== null);
+
+      const uniqueSources = Array.from(new Map(sources.map((s: any) => [s.uri, s])).values());
+
+      return { text: response.text, sources: uniqueSources as { title: string, uri: string, type: 'web' }[] };
+    } else {
+      // Use flash-lite for fast chat (No Grounding)
+      const prompt = `
+        You are an agricultural expert assistant for "AgriBridge Africa". 
+        Your goal is to help smallholder farmers with crop advice, market insights, and logistics tips.
+        User Query: ${query}
+        
+        Keep the answer practical, simple, and encouraging. Max 100 words.
+        `;
+
+      const response = await ai.models.generateContent({
+        model: 'gemini-flash-lite-latest',
+        contents: prompt,
+      });
+      return { text: response.text };
+    }
+
+  } catch (error) {
+    console.error("Gemini API Error:", error);
+    return { text: "Sorry, I am having trouble connecting to the agricultural database." };
+  }
+};
+
+export const getMarketInsights = async (marketPrices: any[], countryName: string) => {
+  if (!ai || !apiKey) return "AI Service Unavailable";
+
+  try {
+    const prompt = `
+      Act as an agricultural market analyst for ${countryName}.
+      Analyze these current market prices: ${JSON.stringify(marketPrices)}.
+      
+      Provide a brief, actionable 3-bullet point summary for a farmer:
+      1. One crop opportunity (high price/up trend).
+      2. One crop risk (falling price).
+      3. A general strategic tip for the week.
+      
+      Keep it strictly text, no markdown formatting, concise.
+    `;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-flash-lite-latest',
+      contents: prompt,
+    });
+    return response.text;
+  } catch (error) {
+    console.error("Gemini API Error:", error);
+    return "Could not generate market insights at this time.";
+  }
+};
+
+export const enhanceUserBio = async (currentBio: string, role: string, name: string) => {
+  if (!ai || !apiKey) return currentBio;
+
+  try {
+    const prompt = `
+      Rewrite the following bio for a ${role} named ${name} on AgriBridge Africa (an agricultural logistics & marketplace platform).
+      Make it professional, trustworthy, and engaging. It should build confidence with potential business partners. Max 50 words.
+      
+      Current Bio: "${currentBio || 'New user'}"
+    `;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-flash-lite-latest',
+      contents: prompt,
+    });
+    return response.text;
+  } catch (error) {
+    console.error("Gemini API Error:", error);
+    return currentBio;
+  }
+};
