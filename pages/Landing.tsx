@@ -220,9 +220,9 @@ const Landing: React.FC<LandingProps> = ({ onGetStarted, onNavigateLegal }) => {
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] rounded-full border-2 border-green-500/20 animate-[spin_60s_linear_infinite]"></div>
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] rounded-full border border-orange-500/20 animate-[spin_40s_linear_infinite_reverse]"></div>
 
-                        <div className="relative w-full h-full max-w-md mt-10">
+                        <div className="relative w-full h-full max-w-sm sm:max-w-md mt-6 sm:mt-10 mx-auto">
                             {/* Main Image */}
-                            <div className="absolute top-0 right-2 sm:right-0 w-52 h-64 sm:w-64 sm:h-80 rounded-3xl overflow-hidden border-4 border-white/10 shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500 z-20">
+                            <div className="absolute top-0 right-4 sm:right-0 w-52 h-64 sm:w-64 sm:h-80 rounded-3xl overflow-hidden border-4 border-white/10 shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500 z-20">
                                 <img
                                     src="/assets/backgrounds/farm-2.jpg"
                                     alt="Farmers working"
@@ -236,7 +236,7 @@ const Landing: React.FC<LandingProps> = ({ onGetStarted, onNavigateLegal }) => {
                             </div>
 
                             {/* Secondary Image - Floating Left */}
-                            <div className="absolute top-36 sm:top-32 left-0 sm:-left-8 w-36 h-36 sm:w-48 sm:h-48 rounded-3xl overflow-hidden border-4 border-white/10 shadow-xl transform -rotate-6 hover:rotate-0 hover:z-30 transition-all duration-500 z-10 animate-[float_6s_ease-in-out_infinite]">
+                            <div className="absolute top-28 sm:top-32 left-4 sm:-left-8 w-36 h-36 sm:w-48 sm:h-48 rounded-3xl overflow-hidden border-4 border-white/10 shadow-xl transform -rotate-6 hover:rotate-0 hover:z-30 transition-all duration-500 z-10 animate-[float_6s_ease-in-out_infinite]">
                                 <img
                                     src="/assets/backgrounds/farm-6.jpg"
                                     alt="Fresh harvest"
@@ -245,7 +245,7 @@ const Landing: React.FC<LandingProps> = ({ onGetStarted, onNavigateLegal }) => {
                             </div>
 
                             {/* Third Image - Floating Bottom Right */}
-                            <div className="absolute bottom-4 sm:bottom-0 right-6 sm:right-12 w-32 h-32 sm:w-40 sm:h-40 rounded-full overflow-hidden border-4 border-white/10 shadow-lg transform rotate-12 hover:scale-105 transition-all duration-500 z-30 animate-[float_5s_ease-in-out_infinite_reverse]">
+                            <div className="absolute bottom-12 sm:bottom-0 right-16 sm:right-12 w-32 h-32 sm:w-40 sm:h-40 rounded-full overflow-hidden border-4 border-white/10 shadow-lg transform rotate-12 hover:scale-105 transition-all duration-500 z-30 animate-[float_5s_ease-in-out_infinite_reverse]">
                                 <img
                                     src="/assets/backgrounds/farm-5.jpg"
                                     alt="Logistics"
