@@ -102,8 +102,8 @@ const Landing: React.FC<LandingProps> = ({ onGetStarted, onNavigateLegal }) => {
                     <Logo lightTheme={true} />
 
                     {/* Centered Sub-heading */}
-                    <div className="absolute left-1/2 -translate-x-1/2 mt-1 w-full text-center pointer-events-none">
-                        <span className="animate-blink-colors font-extrabold tracking-widest uppercase text-base md:text-lg hidden lg:inline-block border-2 border-green-500/40 px-7 py-2.5 rounded-full bg-green-900/20 backdrop-blur-md shadow-[0_0_20px_rgba(34,197,94,0.20)] pointer-events-auto">
+                    <div className="absolute left-1/2 -translate-x-1/2 mt-1 w-full text-center pointer-events-none hidden lg:block">
+                        <span className="animate-blink-colors font-extrabold tracking-widest uppercase text-base md:text-lg inline-block border-2 border-green-500/40 px-7 py-2.5 rounded-full bg-green-900/20 backdrop-blur-md shadow-[0_0_20px_rgba(34,197,94,0.20)] pointer-events-auto">
                             Revolutionizing African Agriculture With Power of AI.
                         </span>
                     </div>
@@ -168,6 +168,13 @@ const Landing: React.FC<LandingProps> = ({ onGetStarted, onNavigateLegal }) => {
                 <main className="relative z-10 flex-grow flex flex-col lg:flex-row items-center justify-between px-6 md:px-12 lg:px-16 w-full max-w-[1600px] mx-auto gap-8 lg:gap-16 text-left mt-8 md:mt-12">
                     {/* LEFT CONTENT */}
                     <div className="w-full lg:w-1/2 animate-in fade-in slide-in-from-bottom-8 duration-700 relative">
+                        {/* Mobile Sub-heading */}
+                        <div className="lg:hidden mb-6">
+                            <span className="animate-blink-colors font-extrabold tracking-widest uppercase text-[10px] sm:text-xs inline-block border border-green-500/40 px-3 py-1.5 rounded-full bg-green-900/20 backdrop-blur-md shadow-[0_0_10px_rgba(34,197,94,0.20)] pointer-events-auto">
+                                Revolutionizing African Agriculture With Power of AI.
+                            </span>
+                        </div>
+
                         <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-6 leading-tight drop-shadow-md">
                             Connecting{' '}
                             <span
