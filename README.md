@@ -1,5 +1,7 @@
 # AgriBridge Africa
 
+🔴 **Live Demo:** [https://agribridge-africa.vercel.app](https://agribridge-africa.vercel.app)
+
 AgriBridge Africa is a comprehensive, modern web platform designed to connect agricultural stakeholders across the continent. It serves as a unified ecosystem connecting **Farmers**, **Buyers** (Retail/Wholesalers), **Logistics Providers**, and **Warehouse Owners**.
 
 
