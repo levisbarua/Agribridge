@@ -215,7 +215,7 @@ const Landing: React.FC<LandingProps> = ({ onGetStarted, onNavigateLegal }) => {
                     </div>
 
                     {/* RIGHT CONTENT (Layered Image Collage) */}
-                    <div className="hidden lg:flex w-full lg:w-1/2 justify-center lg:justify-end relative h-[500px] animate-in fade-in slide-in-from-right-8 duration-1000 delay-300">
+                    <div className="flex w-full lg:w-1/2 justify-center lg:justify-end relative h-[380px] sm:h-[450px] lg:h-[500px] mt-8 lg:mt-0 scale-[0.85] sm:scale-95 lg:scale-100 origin-top lg:origin-center animate-in fade-in slide-in-from-bottom-8 lg:slide-in-from-right-8 duration-1000 delay-300">
                         {/* Abstract Decor Ring */}
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] rounded-full border-2 border-green-500/20 animate-[spin_60s_linear_infinite]"></div>
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] rounded-full border border-orange-500/20 animate-[spin_40s_linear_infinite_reverse]"></div>
