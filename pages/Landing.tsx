@@ -40,6 +40,7 @@ const FAQS = [
 const Landing: React.FC<LandingProps> = ({ onGetStarted, onNavigateLegal }) => {
     const [bgIndex, setBgIndex] = useState(0);
     const [openFaq, setOpenFaq] = useState<number | null>(null);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [darkMode, setDarkMode] = useState(() => {
         if (typeof window !== 'undefined') {
             return localStorage.getItem('theme') === 'dark';
@@ -107,25 +108,60 @@ const Landing: React.FC<LandingProps> = ({ onGetStarted, onNavigateLegal }) => {
                         </span>
                     </div>
 
-                    {/* Nav Links + Get Started */}
-                    <div className="flex items-center gap-10">
-                        <button onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })} className="hidden md:inline text-white/80 hover:text-white transition-colors font-medium text-lg cursor-pointer">About Us</button>
-                        <button onClick={() => document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' })} className="hidden md:inline text-white/80 hover:text-white transition-colors font-medium text-lg cursor-pointer">FAQ</button>
-                        <button onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} className="hidden md:inline text-white/80 hover:text-white transition-colors font-medium text-lg cursor-pointer">Contact Us</button>
-                        <button
-                            onClick={() => setDarkMode(!darkMode)}
-                            className="p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer"
-                            aria-label="Toggle theme"
-                        >
-                            {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-                        </button>
-                        <button
-                            onClick={onGetStarted}
-                            className="bg-green-600 hover:bg-green-500 text-white px-6 py-2.5 rounded-full font-semibold flex items-center gap-2 transition-all shadow-lg active:scale-95"
-                        >
-                            Get Started
-                        </button>
+                    {/* Navigation container (Right side) */}
+                    <div className="flex items-center gap-4 md:gap-10">
+                        {/* Desktop Links */}
+                        <div className="hidden md:flex items-center gap-10">
+                            <button onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })} className="text-white/80 hover:text-white transition-colors font-medium text-lg cursor-pointer">About Us</button>
+                            <button onClick={() => document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' })} className="text-white/80 hover:text-white transition-colors font-medium text-lg cursor-pointer">FAQ</button>
+                            <button onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} className="text-white/80 hover:text-white transition-colors font-medium text-lg cursor-pointer">Contact Us</button>
+                        </div>
+
+                        {/* Always visible icons/buttons */}
+                        <div className="flex items-center gap-4">
+                            <button
+                                onClick={() => setDarkMode(!darkMode)}
+                                className="p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer"
+                                aria-label="Toggle theme"
+                            >
+                                {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                            </button>
+                            <button
+                                onClick={onGetStarted}
+                                className="hidden md:flex bg-green-600 hover:bg-green-500 text-white px-6 py-2.5 rounded-full font-semibold items-center justify-center transition-all shadow-lg active:scale-95 whitespace-nowrap"
+                            >
+                                Get Started
+                            </button>
+
+                            {/* Mobile Menu Toggle */}
+                            <button
+                                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                                className="md:hidden p-2 text-white bg-white/10 rounded-lg hover:bg-white/20 transition-colors"
+                            >
+                                {isMobileMenuOpen ? (
+                                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                ) : (
+                                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                                    </svg>
+                                )}
+                            </button>
+                        </div>
                     </div>
+
+                    {/* Mobile Menu Panel */}
+                    {isMobileMenuOpen && (
+                        <div className="absolute top-full left-0 w-full bg-slate-900/95 backdrop-blur-md border-b border-white/10 py-4 px-6 flex flex-col gap-4 md:hidden shadow-2xl origin-top animate-in slide-in-from-top-2 duration-300">
+                            <button onClick={() => { setIsMobileMenuOpen(false); document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }); }} className="text-white/80 hover:text-white font-medium text-lg text-left py-2 border-b border-white/10">About Us</button>
+                            <button onClick={() => { setIsMobileMenuOpen(false); document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' }); }} className="text-white/80 hover:text-white font-medium text-lg text-left py-2 border-b border-white/10">FAQ</button>
+                            <button onClick={() => { setIsMobileMenuOpen(false); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); }} className="text-white/80 hover:text-white font-medium text-lg text-left py-2 border-b border-white/10">Contact Us</button>
+                            <button onClick={() => { setIsMobileMenuOpen(false); onGetStarted(); }} className="bg-green-600 hover:bg-green-500 text-white mt-2 px-6 py-3 rounded-xl font-bold text-center w-full transition-colors">
+                                Get Started
+                            </button>
+                        </div>
+                    )}
                 </nav>
 
                 {/* MAIN CONTENT (Hero Text & Graphic) */}
@@ -221,10 +257,10 @@ const Landing: React.FC<LandingProps> = ({ onGetStarted, onNavigateLegal }) => {
                         </svg>
                     </a>
                 </div>
-            </div>
+            </div >
 
             {/* ABOUT THE COMPANY SECTION */}
-            <section id="about" className={`py-24 relative transition-colors duration-300 ${darkMode ? 'bg-slate-900' : 'bg-white'}`}>
+            < section id="about" className={`py-24 relative transition-colors duration-300 ${darkMode ? 'bg-slate-900' : 'bg-white'}`}>
                 <div className="max-w-7xl mx-auto px-6 md:px-12">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                         {/* Left Content - Text */}
@@ -297,10 +333,10 @@ const Landing: React.FC<LandingProps> = ({ onGetStarted, onNavigateLegal }) => {
                         </div>
                     </div>
                 </div>
-            </section>
+            </section >
 
             {/* FAQ SECTION */}
-            <section id="faq" className={`py-24 border-t transition-colors duration-300 ${darkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+            < section id="faq" className={`py-24 border-t transition-colors duration-300 ${darkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
                 <div className="max-w-4xl mx-auto px-6 md:px-12">
                     <div className="text-center mb-16">
                         <h2 className="text-green-600 font-bold tracking-wider uppercase text-sm mb-2">Got Questions?</h2>
@@ -338,10 +374,10 @@ const Landing: React.FC<LandingProps> = ({ onGetStarted, onNavigateLegal }) => {
                         ))}
                     </div>
                 </div>
-            </section>
+            </section >
 
             {/* CONTACT & GET IN TOUCH SECTION */}
-            <section id="contact" className={`py-24 relative transition-colors duration-300 ${darkMode ? 'bg-slate-900' : 'bg-white'}`}>
+            < section id="contact" className={`py-24 relative transition-colors duration-300 ${darkMode ? 'bg-slate-900' : 'bg-white'}`}>
                 <div className="max-w-7xl mx-auto px-6 md:px-12">
                     <div className="text-center mb-16">
                         <h2 className="text-green-600 font-bold tracking-wider uppercase text-sm mb-2">Contact Us</h2>
@@ -431,15 +467,15 @@ const Landing: React.FC<LandingProps> = ({ onGetStarted, onNavigateLegal }) => {
 
                     </div>
                 </div>
-            </section>
+            </section >
 
             {/* CALL TO ACTION SECTION */}
-            <section className="py-20 bg-green-600 relative overflow-hidden">
+            < section className="py-20 bg-green-600 relative overflow-hidden" >
                 {/* Background decorative elements */}
-                <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+                < div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none" >
                     <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[150%] bg-white/10 rotate-12 transform-gpu blur-3xl rounded-full"></div>
                     <div className="absolute bottom-[-20%] right-[-10%] w-[40%] h-[120%] bg-green-800/30 -rotate-12 transform-gpu blur-3xl rounded-full"></div>
-                </div>
+                </div >
 
                 <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
                     <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-6 leading-tight">
@@ -456,10 +492,10 @@ const Landing: React.FC<LandingProps> = ({ onGetStarted, onNavigateLegal }) => {
                         <ArrowRight className="w-5 h-5" />
                     </button>
                 </div>
-            </section>
+            </section >
 
             {/* BOTTOM FOOTER */}
-            <footer className="w-full bg-slate-900 px-6 py-16 md:px-12 text-slate-400">
+            < footer className="w-full bg-slate-900 px-6 py-16 md:px-12 text-slate-400" >
                 <div className="max-w-7xl mx-auto">
                     {/* Top Section: Multi-column layout */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
@@ -530,9 +566,9 @@ const Landing: React.FC<LandingProps> = ({ onGetStarted, onNavigateLegal }) => {
                         </div>
                     </div>
                 </div>
-            </footer>
+            </footer >
 
-        </div>
+        </div >
     );
 };
 
