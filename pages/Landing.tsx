@@ -97,7 +97,7 @@ const Landing: React.FC<LandingProps> = ({ onGetStarted, onNavigateLegal }) => {
                 <div className="absolute inset-0 bg-black/60 z-0" />
 
                 {/* TOP NAVIGATION BAR */}
-                <nav className="relative z-10 w-full px-6 py-4 md:px-12 md:py-6 flex items-center justify-between border-b border-white/20">
+                <nav className="relative z-50 w-full px-6 py-4 md:px-12 md:py-6 flex items-center justify-between border-b border-white/20">
                     {/* Logo */}
                     <Logo lightTheme={true} />
 
