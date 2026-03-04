@@ -170,7 +170,7 @@ const Landing: React.FC<LandingProps> = ({ onGetStarted, onNavigateLegal }) => {
                     <div className="w-full lg:w-1/2 animate-in fade-in slide-in-from-bottom-8 duration-700 relative">
                         {/* Mobile Sub-heading */}
                         <div className="lg:hidden mb-6 flex justify-center w-full">
-                            <span className="animate-blink-colors font-extrabold tracking-wider uppercase text-[10px] sm:text-[11px] inline-block border-[1.5px] border-green-500/60 px-3 py-1.5 sm:px-4 sm:py-2 text-center rounded-full bg-slate-900/60 backdrop-blur-md shadow-[0_0_15px_rgba(34,197,94,0.30)] pointer-events-auto">
+                            <span className="animate-blink-colors font-extrabold tracking-wider uppercase text-[12px] sm:text-[13px] inline-block border-[1.5px] border-green-500/60 px-4 py-2 sm:px-5 sm:py-2.5 text-center rounded-full bg-slate-900/60 backdrop-blur-md shadow-[0_0_15px_rgba(34,197,94,0.30)] pointer-events-auto">
                                 Revolutionizing African Agriculture With Power of AI.
                             </span>
                         </div>
