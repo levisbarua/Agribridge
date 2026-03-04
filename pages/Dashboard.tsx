@@ -189,7 +189,7 @@ const Dashboard: React.FC<DashboardProps> = ({ role, marketPrices, products, tra
           </div>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
             icon={Package}
             label="Active Listings"
@@ -311,7 +311,7 @@ const Dashboard: React.FC<DashboardProps> = ({ role, marketPrices, products, tra
         </div>
 
         <SectionHeader title="Your Active Listings" />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {myProducts.map(p => (
             <div key={p.id} className="bg-white p-4 rounded-xl border border-slate-200 flex gap-4">
               <img src={p.imageUrl} className="w-20 h-20 rounded-lg object-cover bg-slate-100" />
@@ -341,7 +341,7 @@ const Dashboard: React.FC<DashboardProps> = ({ role, marketPrices, products, tra
           <p className="text-slate-500">Source fresh produce directly from farmers in {country.name}.</p>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           <StatCard
             icon={ShoppingBag}
             label="Active Orders"
@@ -445,7 +445,7 @@ const Dashboard: React.FC<DashboardProps> = ({ role, marketPrices, products, tra
           <p className="text-slate-500">Find loads, manage your fleet, and track earnings in {country.name}.</p>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard icon={Package} label="Available Jobs" value={availableJobs.length} color="bg-green-600" />
           <StatCard
             icon={Truck}
@@ -569,7 +569,7 @@ const Dashboard: React.FC<DashboardProps> = ({ role, marketPrices, products, tra
           <p className="text-slate-500">Monitor capacity, temperature, and manage bookings.</p>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard icon={Warehouse} label="Capacity Used" value={65} color="bg-blue-600" onClick={() => onNavigate('profile')} />
           <StatCard icon={Thermometer} label="Avg Temp" value="4.2°C" color="bg-sky-500" subtext="Optimal range" />
           <StatCard icon={Package} label="Stored Items" value="12,400 kg" color="bg-orange-500" />

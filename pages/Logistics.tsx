@@ -319,7 +319,7 @@ const Logistics: React.FC<LogisticsProps> = ({ requests, role, onRequestTranspor
       </div>
 
       <div className="flex justify-between items-center mb-6 border-b border-slate-200">
-        <div className="flex gap-4">
+        <div className="flex gap-4 overflow-x-auto pb-1 w-full hide-scrollbar">
           <button
             onClick={() => setActiveTab('requests')}
             className={`pb-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${activeTab === 'requests' ? 'border-green-600 text-green-600' : 'border-transparent text-slate-500'}`}
@@ -525,7 +525,7 @@ const Logistics: React.FC<LogisticsProps> = ({ requests, role, onRequestTranspor
         </div>
       ) : (
         /* Fleet Grid */
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {fleet.map(vehicle => (
             <div key={vehicle.id} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow group">
               <div className="flex justify-between items-start mb-4">
@@ -618,7 +618,7 @@ const Logistics: React.FC<LogisticsProps> = ({ requests, role, onRequestTranspor
                       />
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-1">{TRANSLATIONS[lang].estWeight}</label>
                       <div className="relative">
@@ -750,7 +750,7 @@ const Logistics: React.FC<LogisticsProps> = ({ requests, role, onRequestTranspor
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">{TRANSLATIONS[lang].capacity} (Tons)</label>
                   <input

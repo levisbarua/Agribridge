@@ -109,7 +109,7 @@ const Profile: React.FC<ProfileProps> = ({ role, country, products = [], logisti
                         <h3 className="font-bold text-slate-800 text-lg">{TRANSLATIONS[lang].myActiveListings}</h3>
                         <span className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-bold">{myProducts.length} {TRANSLATIONS[lang].items}</span>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {myProducts.map(p => (
                             <div key={p.id} className="bg-white border border-slate-200 rounded-lg p-3 flex gap-3 hover:shadow-md transition-all cursor-pointer active:scale-[0.98]">
                                 <img src={p.imageUrl} className="w-20 h-20 rounded bg-slate-100 object-cover" />
@@ -125,7 +125,7 @@ const Profile: React.FC<ProfileProps> = ({ role, country, products = [], logisti
 
                 <div>
                     <h3 className="font-bold text-slate-800 text-lg mb-4">{TRANSLATIONS[lang].recentSalesHistory}</h3>
-                    <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+                    <div className="bg-white border border-slate-200 rounded-xl overflow-x-auto">
                         {mySales.length === 0 ? (
                             <div className="p-8 text-center text-slate-500">{TRANSLATIONS[lang].noSales}</div>
                         ) : (
@@ -168,7 +168,7 @@ const Profile: React.FC<ProfileProps> = ({ role, country, products = [], logisti
             <div className="space-y-8">
                 <div>
                     <h3 className="font-bold text-slate-800 text-lg mb-4">{TRANSLATIONS[lang].fleetStatus}</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {fleet.map(v => (
                             <div key={v.id} className="bg-white border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                                 <div className="flex justify-between items-start mb-2">
@@ -187,7 +187,7 @@ const Profile: React.FC<ProfileProps> = ({ role, country, products = [], logisti
 
                 <div>
                     <h3 className="font-bold text-slate-800 text-lg mb-4">{TRANSLATIONS[lang].tripHistory}</h3>
-                    <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+                    <div className="bg-white border border-slate-200 rounded-xl overflow-x-auto">
                         {myTrips.length === 0 ? (
                             <div className="p-8 text-center text-slate-500">{TRANSLATIONS[lang].noTrips}</div>
                         ) : (
@@ -231,7 +231,7 @@ const Profile: React.FC<ProfileProps> = ({ role, country, products = [], logisti
         return (
             <div className="space-y-6">
                 <h3 className="font-bold text-slate-800 text-lg mb-4">{TRANSLATIONS[lang].recentOrderHistory}</h3>
-                <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+                <div className="bg-white border border-slate-200 rounded-xl overflow-x-auto">
                     {myOrders.length === 0 ? (
                         <div className="p-8 text-center text-slate-500">{TRANSLATIONS[lang].noOrders}</div>
                     ) : (
@@ -270,7 +270,7 @@ const Profile: React.FC<ProfileProps> = ({ role, country, products = [], logisti
         return (
             <div className="space-y-6">
                 <h3 className="font-bold text-slate-800 text-lg mb-4">{TRANSLATIONS[lang].managedFacilities}</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {myStorage.map(s => (
                         <div key={s.id} className="bg-white border border-slate-200 rounded-xl overflow-hidden flex flex-col hover:shadow-md transition-shadow">
                             <img src={s.imageUrl} className="h-32 w-full object-cover" />
@@ -369,7 +369,7 @@ const Profile: React.FC<ProfileProps> = ({ role, country, products = [], logisti
                 </div>
 
                 {/* Tabs */}
-                <div className="flex border-t border-slate-100 px-8 overflow-x-auto">
+                <div className="flex border-t border-slate-100 px-4 sm:px-8 overflow-x-auto hide-scrollbar">
                     <button
                         onClick={() => setActiveTab('overview')}
                         className={`py-4 px-4 text-sm font-medium border-b-2 transition-colors whitespace-nowrap active:bg-slate-50 ${activeTab === 'overview' ? 'border-green-600 text-green-600' : 'border-transparent text-slate-500 hover:text-slate-800'}`}
@@ -543,7 +543,7 @@ const Profile: React.FC<ProfileProps> = ({ role, country, products = [], logisti
                                     onChange={e => setUserProfile({ ...userProfile, location: e.target.value })}
                                 />
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-1">{TRANSLATIONS[lang].email}</label>
                                     <input

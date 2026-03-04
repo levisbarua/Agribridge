@@ -267,7 +267,7 @@ const Landing: React.FC<LandingProps> = ({ onGetStarted, onNavigateLegal }) => {
             </div >
 
             {/* ABOUT THE COMPANY SECTION */}
-            < section id="about" className={`py-24 relative transition-colors duration-300 ${darkMode ? 'bg-slate-900' : 'bg-white'}`}>
+            < section id="about" className={`py-16 md:py-24 relative transition-colors duration-300 ${darkMode ? 'bg-slate-900' : 'bg-white'}`}>
                 <div className="max-w-7xl mx-auto px-6 md:px-12">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                         {/* Left Content - Text */}
@@ -343,7 +343,7 @@ const Landing: React.FC<LandingProps> = ({ onGetStarted, onNavigateLegal }) => {
             </section >
 
             {/* FAQ SECTION */}
-            < section id="faq" className={`py-24 border-t transition-colors duration-300 ${darkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+            < section id="faq" className={`py-16 md:py-24 border-t transition-colors duration-300 ${darkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
                 <div className="max-w-4xl mx-auto px-6 md:px-12">
                     <div className="text-center mb-16">
                         <h2 className="text-green-600 font-bold tracking-wider uppercase text-sm mb-2">Got Questions?</h2>
@@ -384,7 +384,7 @@ const Landing: React.FC<LandingProps> = ({ onGetStarted, onNavigateLegal }) => {
             </section >
 
             {/* CONTACT & GET IN TOUCH SECTION */}
-            < section id="contact" className={`py-24 relative transition-colors duration-300 ${darkMode ? 'bg-slate-900' : 'bg-white'}`}>
+            < section id="contact" className={`py-16 md:py-24 relative transition-colors duration-300 ${darkMode ? 'bg-slate-900' : 'bg-white'}`}>
                 <div className="max-w-7xl mx-auto px-6 md:px-12">
                     <div className="text-center mb-16">
                         <h2 className="text-green-600 font-bold tracking-wider uppercase text-sm mb-2">Contact Us</h2>
@@ -477,7 +477,7 @@ const Landing: React.FC<LandingProps> = ({ onGetStarted, onNavigateLegal }) => {
             </section >
 
             {/* CALL TO ACTION SECTION */}
-            < section className="py-20 bg-green-600 relative overflow-hidden" >
+            < section className="py-16 md:py-20 bg-green-600 relative overflow-hidden" >
                 {/* Background decorative elements */}
                 < div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none" >
                     <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[150%] bg-white/10 rotate-12 transform-gpu blur-3xl rounded-full"></div>

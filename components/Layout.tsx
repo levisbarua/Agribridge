@@ -89,8 +89,8 @@ const Layout: React.FC<LayoutProps> = ({
 
       {/* Sidebar Navigation */}
       <aside className={`
-        fixed inset-y-0 left-0 z-30 w-64 border-r transform transition-all duration-200 ease-in-out md:translate-x-0 md:static md:h-screen
-        ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-green-100 border-green-200'}
+        fixed inset-y-0 left-0 z-50 w-64 border-r transform transition-all duration-300 ease-in-out md:translate-x-0 md:static md:h-screen
+        ${darkMode ? 'bg-slate-800 border-slate-700 shadow-2xl md:shadow-none' : 'bg-green-100 border-green-200 shadow-2xl md:shadow-none'}
         ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         <div className="p-6 flex flex-col h-full">
@@ -146,7 +146,7 @@ const Layout: React.FC<LayoutProps> = ({
       {/* Main Content Overlay */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/20 z-20 md:hidden"
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 md:hidden transition-all duration-300"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
