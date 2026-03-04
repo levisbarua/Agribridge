@@ -10,11 +10,16 @@ import Settings from './pages/Settings';
 import AboutContact from './pages/AboutContact';
 import Payment from './pages/Payment';
 import CartDrawer from './components/CartDrawer';
+import Landing from './pages/Landing';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
 import { UserRole, Product, TransportRequest, Language, Country, FleetVehicle, StorageFacility, CartItem, Order } from './types';
 import { AFRICAN_COUNTRIES, generateMockData } from './constants';
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showLanding, setShowLanding] = useState(true);
+  const [legalPage, setLegalPage] = useState<'privacy' | 'terms' | null>(null);
   const [currentPage, setCurrentPage] = useState('home');
   const [userRole, setUserRole] = useState<UserRole>('FARMER');
   const [language, setLanguage] = useState<Language>('en');
@@ -32,6 +37,23 @@ const App: React.FC = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
+  // Dark Mode State
+  const [darkMode, setDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('theme') === 'dark';
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('theme', darkMode ? 'dark' : 'light');
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
+
   // Initialize data when country changes
   useEffect(() => {
     const data = generateMockData(selectedCountry);
@@ -46,6 +68,8 @@ const App: React.FC = () => {
         farmerName: 'John Doe',
         origin: selectedCountry.locations[0],
         destination: selectedCountry.locations[1] || 'City Center',
+        originCoords: [selectedCountry.coordinates.lat, selectedCountry.coordinates.lng],
+        destinationCoords: [selectedCountry.coordinates.lat - 0.5, selectedCountry.coordinates.lng + 0.8],
         goodsType: 'Grains',
         weightKg: 2000,
         status: 'ACCEPTED' as const,
@@ -82,6 +106,7 @@ const App: React.FC = () => {
 
   const handleLogout = () => {
     setIsAuthenticated(false);
+    setShowLanding(true);
     setUserRole('FARMER');
     setCart([]);
   };
@@ -172,6 +197,15 @@ const App: React.FC = () => {
   };
 
   if (!isAuthenticated) {
+    if (legalPage === 'privacy') {
+      return <PrivacyPolicy onBack={() => setLegalPage(null)} />;
+    }
+    if (legalPage === 'terms') {
+      return <TermsOfService onBack={() => setLegalPage(null)} />;
+    }
+    if (showLanding) {
+      return <Landing onGetStarted={() => setShowLanding(false)} onNavigateLegal={setLegalPage} />;
+    }
     return <Auth onLogin={handleLogin} />;
   }
 
@@ -299,6 +333,10 @@ const App: React.FC = () => {
         );
       case 'about':
         return <AboutContact lang={language} />;
+      case 'privacy':
+        return <PrivacyPolicy onBack={() => setCurrentPage('home')} />;
+      case 'terms':
+        return <TermsOfService onBack={() => setCurrentPage('home')} />;
       case 'payment':
         return (
           <Payment
@@ -323,6 +361,8 @@ const App: React.FC = () => {
       onNavigate={setCurrentPage}
       cartItemCount={cart.reduce((acc, item) => acc + item.cartQuantity, 0)}
       onOpenCart={() => setIsCartOpen(true)}
+      darkMode={darkMode}
+      onToggleDarkMode={() => setDarkMode(!darkMode)}
     >
       {renderPage()}
 

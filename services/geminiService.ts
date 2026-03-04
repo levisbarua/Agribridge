@@ -1,13 +1,18 @@
 import { GoogleGenAI } from "@google/genai";
 
-const apiKey = process.env.API_KEY || process.env.VITE_GEMINI_API_KEY || '';
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
+console.log("VITE_GEMINI_API_KEY loaded:", apiKey ? "YES (hidden for security)" : "NO");
+
 let ai: GoogleGenAI | null = null;
 try {
   if (apiKey) {
     ai = new GoogleGenAI({ apiKey });
+    console.log("GoogleGenAI initialized successfully");
+  } else {
+    console.error("Skipped GoogleGenAI initialization because API key is empty.");
   }
 } catch (e) {
-  console.warn("Failed to initialize GoogleGenAI:", e);
+  console.error("Failed to initialize GoogleGenAI:", e);
 }
 
 export const getShelfLifePrediction = async (productName: string, harvestDate: string, additionalInfo: string) => {
@@ -26,8 +31,12 @@ export const getShelfLifePrediction = async (productName: string, harvestDate: s
     `;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-flash-lite-latest',
+      model: 'gemini-2.5-flash-lite',
       contents: prompt,
+      config: {
+        systemInstruction: "Keep responses extremely short and fast.",
+        maxOutputTokens: 150,
+      }
     });
     return response.text;
   } catch (error) {
@@ -130,8 +139,12 @@ export const getAgriAdvice = async (
         `;
 
       const response = await ai.models.generateContent({
-        model: 'gemini-flash-lite-latest',
+        model: 'gemini-2.5-flash-lite',
         contents: prompt,
+        config: {
+          systemInstruction: "Keep responses extremely short and fast. Bullet point lists.",
+          maxOutputTokens: 100,
+        }
       });
       return { text: response.text };
     }
@@ -139,6 +152,48 @@ export const getAgriAdvice = async (
   } catch (error) {
     console.error("Gemini API Error:", error);
     return { text: "Sorry, I am having trouble connecting to the agricultural database." };
+  }
+};
+
+export const analyzePlantDisease = async (base64Image: string, mimeType: string, customPrompt?: string) => {
+  if (!ai || !apiKey) return "AI Service Unavailable: Missing API Key";
+
+  try {
+    const prompt = customPrompt || `
+      Act as an expert agricultural pathologist in Africa. 
+      Analyze this plant image carefully. 
+      
+      Respond with:
+      1. What disease, pest, or deficiency is visible (if any). Let the farmer know if the plant looks healthy.
+      2. The likely cause (weather, soil, pests, etc.).
+      3. Actionable, low-cost organic or chemical treatments available to smallholder farmers. 
+      
+      Keep the explanation simple, encouraging, and clear. Max 150 words.
+    `;
+
+    // The Gemini SDK expects base64 data without the data URI prefix (e.g. "data:image/jpeg;base64,")
+    const base64Data = base64Image.split(',')[1] || base64Image;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: [
+        { text: prompt },
+        {
+          inlineData: {
+            data: base64Data,
+            mimeType: mimeType
+          }
+        }
+      ],
+      config: {
+        maxOutputTokens: 200,
+      }
+    });
+
+    return response.text;
+  } catch (error) {
+    console.error("Gemini API Error (Image Analysis):", error);
+    return "Sorry, I couldn't analyze the image. Please try again or provide a clearer photo.";
   }
 };
 
@@ -159,8 +214,12 @@ export const getMarketInsights = async (marketPrices: any[], countryName: string
     `;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-flash-lite-latest',
+      model: 'gemini-2.5-flash-lite',
       contents: prompt,
+      config: {
+        systemInstruction: "Keep responses extremely short and fast.",
+        maxOutputTokens: 150,
+      }
     });
     return response.text;
   } catch (error) {
@@ -181,8 +240,12 @@ export const enhanceUserBio = async (currentBio: string, role: string, name: str
     `;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-flash-lite-latest',
+      model: 'gemini-2.5-flash-lite',
       contents: prompt,
+      config: {
+        systemInstruction: "Keep responses extremely short and fast.",
+        maxOutputTokens: 150,
+      }
     });
     return response.text;
   } catch (error) {

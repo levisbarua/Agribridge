@@ -1,67 +1,67 @@
 import { Product, TransportRequest, MarketPrice, StorageFacility, Country, LogisticsProvider } from './types';
 
 export const AFRICAN_COUNTRIES: Country[] = [
-  { 
-    code: 'KE', 
-    name: 'Kenya', 
-    currency: 'KES', 
-    flag: '🇰🇪', 
+  {
+    code: 'KE',
+    name: 'Kenya',
+    currency: 'KES',
+    flag: '🇰🇪',
     locations: ['Nairobi', 'Mombasa', 'Kisumu', 'Nakuru', 'Eldoret'],
     coordinates: { lat: -1.2921, lng: 36.8219 } // Nairobi
   },
-  { 
-    code: 'NG', 
-    name: 'Nigeria', 
-    currency: 'NGN', 
-    flag: '🇳🇬', 
+  {
+    code: 'NG',
+    name: 'Nigeria',
+    currency: 'NGN',
+    flag: '🇳🇬',
     locations: ['Lagos', 'Abuja', 'Kano', 'Ibadan', 'Port Harcourt'],
     coordinates: { lat: 9.0765, lng: 7.3986 } // Abuja
   },
-  { 
-    code: 'ZA', 
-    name: 'South Africa', 
-    currency: 'ZAR', 
-    flag: '🇿🇦', 
+  {
+    code: 'ZA',
+    name: 'South Africa',
+    currency: 'ZAR',
+    flag: '🇿🇦',
     locations: ['Johannesburg', 'Cape Town', 'Durban', 'Pretoria', 'Soweto'],
     coordinates: { lat: -25.7479, lng: 28.2293 } // Pretoria
   },
-  { 
-    code: 'GH', 
-    name: 'Ghana', 
-    currency: 'GHS', 
-    flag: '🇬🇭', 
+  {
+    code: 'GH',
+    name: 'Ghana',
+    currency: 'GHS',
+    flag: '🇬🇭',
     locations: ['Accra', 'Kumasi', 'Tamale', 'Takoradi', 'Ashaiman'],
     coordinates: { lat: 5.6037, lng: -0.1870 } // Accra
   },
-  { 
-    code: 'TZ', 
-    name: 'Tanzania', 
-    currency: 'TZS', 
-    flag: '🇹🇿', 
+  {
+    code: 'TZ',
+    name: 'Tanzania',
+    currency: 'TZS',
+    flag: '🇹🇿',
     locations: ['Dar es Salaam', 'Mwanza', 'Arusha', 'Dodoma', 'Mbeya'],
     coordinates: { lat: -6.7924, lng: 39.2083 } // Dar es Salaam
   },
-  { 
-    code: 'UG', 
-    name: 'Uganda', 
-    currency: 'UGX', 
-    flag: '🇺🇬', 
+  {
+    code: 'UG',
+    name: 'Uganda',
+    currency: 'UGX',
+    flag: '🇺🇬',
     locations: ['Kampala', 'Entebbe', 'Jinja', 'Gulu', 'Mbarara'],
     coordinates: { lat: 0.3476, lng: 32.5825 } // Kampala
   },
-  { 
-    code: 'RW', 
-    name: 'Rwanda', 
-    currency: 'RWF', 
-    flag: '🇷🇼', 
+  {
+    code: 'RW',
+    name: 'Rwanda',
+    currency: 'RWF',
+    flag: '🇷🇼',
     locations: ['Kigali', 'Butare', 'Gitarama', 'Ruhengeri', 'Gisenyi'],
     coordinates: { lat: -1.9441, lng: 30.0619 } // Kigali
   },
-  { 
-    code: 'EG', 
-    name: 'Egypt', 
-    currency: 'EGP', 
-    flag: '🇪🇬', 
+  {
+    code: 'EG',
+    name: 'Egypt',
+    currency: 'EGP',
+    flag: '🇪🇬',
     locations: ['Cairo', 'Alexandria', 'Giza', 'Shubra El Kheima', 'Port Said'],
     coordinates: { lat: 30.0444, lng: 31.2357 } // Cairo
   },
@@ -123,6 +123,8 @@ export const generateMockData = (country: Country) => {
       farmerName: 'John Doe',
       origin: locs[0] + ' Outskirts',
       destination: 'Central Market',
+      originCoords: [country.coordinates.lat + 0.1, country.coordinates.lng - 0.1], // Slightly off center
+      destinationCoords: [country.coordinates.lat - 0.05, country.coordinates.lng + 0.05],
       goodsType: 'Vegetables',
       weightKg: 500,
       status: 'PENDING',
@@ -134,6 +136,8 @@ export const generateMockData = (country: Country) => {
       farmerName: 'John Doe',
       origin: locs[0],
       destination: locs[1] || 'City Center',
+      originCoords: [country.coordinates.lat, country.coordinates.lng],
+      destinationCoords: [country.coordinates.lat + 1.5, country.coordinates.lng + 1.2], // Arbitrary distance
       goodsType: 'Fruits',
       weightKg: 1200,
       status: 'COMPLETED',

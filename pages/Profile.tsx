@@ -20,9 +20,12 @@ const Profile: React.FC<ProfileProps> = ({ role, country, products = [], logisti
     const [isSaving, setIsSaving] = useState(false);
     const [isEnhancingBio, setIsEnhancingBio] = useState(false);
 
+    // Define default name based on role
+    const defaultName = role === 'FARMER' ? 'John Doe' : role === 'LOGISTICS' ? 'Swift Haulage Ltd' : role === 'BUYER' ? 'Fresh Foods Supermarket' : 'Nairobi Cold Storage';
+
     // Mock User Data
     const [userProfile, setUserProfile] = useState({
-        name: role === 'FARMER' ? 'John Doe' : role === 'LOGISTICS' ? 'Swift Haulage Ltd' : role === 'BUYER' ? 'Fresh Foods Supermarket' : 'Nairobi Cold Storage',
+        name: defaultName,
         location: country.locations[0],
         joinDate: 'May 2023',
         rating: 4.8,
@@ -32,7 +35,11 @@ const Profile: React.FC<ProfileProps> = ({ role, country, products = [], logisti
             ? 'Passionate organic farmer specializing in high-quality vegetables and grains. Committed to sustainable farming practices.'
             : role === 'LOGISTICS'
                 ? 'Reliable transport solutions across East Africa. We handle perishable and dry goods with care.'
-                : 'Dedicated to sourcing the freshest produce directly from local farmers for our retail chain.'
+                : 'Dedicated to sourcing the freshest produce directly from local farmers for our retail chain.',
+        email: `contact@${defaultName.toLowerCase().replace(/\s/g, '')}.com`,
+        phone: '+254 7XX XXX XXX',
+        coverImage: '',
+        profileImage: ''
     });
 
     const handleSaveProfile = () => {
@@ -44,7 +51,35 @@ const Profile: React.FC<ProfileProps> = ({ role, country, products = [], logisti
     };
 
     const handleCameraClick = () => {
-        alert("Upload profile cover feature coming soon!");
+        // Mock file upload trigger for Cover Image
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = (e: any) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => setUserProfile({ ...userProfile, coverImage: e.target?.result as string });
+                reader.readAsDataURL(file);
+            }
+        };
+        input.click();
+    };
+
+    const handleProfilePicClick = () => {
+        // Mock file upload trigger for Profile Picture
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = (e: any) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => setUserProfile({ ...userProfile, profileImage: e.target?.result as string });
+                reader.readAsDataURL(file);
+            }
+        };
+        input.click();
     };
 
     const handleEnhanceBio = async () => {
@@ -261,25 +296,35 @@ const Profile: React.FC<ProfileProps> = ({ role, country, products = [], logisti
         <div className="max-w-4xl mx-auto pb-10">
             {/* Profile Header */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-6">
-                <div className="h-48 bg-gradient-to-r from-green-600 to-emerald-800 relative">
+                <div
+                    className={`h-48 relative ${!userProfile.coverImage ? 'bg-gradient-to-r from-green-600 to-emerald-800' : ''}`}
+                    style={userProfile.coverImage ? { backgroundImage: `url(${userProfile.coverImage})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
+                >
                     <button
                         onClick={handleCameraClick}
-                        className="absolute top-4 right-4 bg-black/20 hover:bg-black/40 active:bg-black/50 active:scale-95 text-white p-2 rounded-lg backdrop-blur transition-all"
+                        className="absolute top-4 right-4 bg-black/30 hover:bg-black/50 active:bg-black/60 active:scale-95 text-white p-2.5 rounded-lg backdrop-blur transition-all flex items-center gap-2"
                         title="Change Cover Photo"
                     >
                         <Camera className="w-5 h-5" />
+                        <span className="text-sm font-medium hidden sm:inline">Edit Cover</span>
                     </button>
                 </div>
                 <div className="px-8 pb-8">
                     <div className="relative flex justify-between items-end -mt-12 mb-6">
                         <div className="relative">
-                            <div className="w-24 h-24 md:w-32 md:h-32 rounded-2xl bg-white p-1 shadow-lg">
-                                <div className="w-full h-full bg-slate-100 rounded-xl flex items-center justify-center text-4xl font-bold text-slate-400 overflow-hidden">
-                                    <img src={`https://ui-avatars.com/api/?name=${userProfile.name.replace(' ', '+')}&background=random`} className="w-full h-full object-cover" />
+                            <div className="w-24 h-24 md:w-32 md:h-32 rounded-2xl bg-white p-1 shadow-lg relative group cursor-pointer" onClick={handleProfilePicClick}>
+                                <div className="w-full h-full bg-slate-100 rounded-xl flex items-center justify-center text-4xl font-bold text-slate-400 overflow-hidden relative">
+                                    <img
+                                        src={userProfile.profileImage || `https://ui-avatars.com/api/?name=${userProfile.name.replace(' ', '+')}&background=random`}
+                                        className="w-full h-full object-cover"
+                                    />
+                                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <Camera className="w-8 h-8 text-white" />
+                                    </div>
                                 </div>
                             </div>
                             {userProfile.verified && (
-                                <div className="absolute -bottom-2 -right-2 bg-blue-500 text-white p-1.5 rounded-full border-4 border-white shadow-sm" title="Verified User">
+                                <div className="absolute -bottom-2 -right-2 bg-blue-500 text-white p-1.5 rounded-full border-4 border-white shadow-sm z-10" title="Verified User">
                                     <ShieldCheck className="w-4 h-4" />
                                 </div>
                             )}
@@ -358,14 +403,14 @@ const Profile: React.FC<ProfileProps> = ({ role, country, products = [], logisti
                                         <Mail className="w-5 h-5 text-slate-400" />
                                         <div>
                                             <div className="text-xs text-slate-500">{TRANSLATIONS[lang].email}</div>
-                                            <div className="font-medium text-slate-900">contact@{userProfile.name.toLowerCase().replace(/\s/g, '')}.com</div>
+                                            <div className="font-medium text-slate-900 break-all">{userProfile.email}</div>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer active:scale-[0.99]">
                                         <Phone className="w-5 h-5 text-slate-400" />
                                         <div>
                                             <div className="text-xs text-slate-500">{TRANSLATIONS[lang].phone}</div>
-                                            <div className="font-medium text-slate-900">+254 7XX XXX XXX</div>
+                                            <div className="font-medium text-slate-900">{userProfile.phone}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -497,6 +542,26 @@ const Profile: React.FC<ProfileProps> = ({ role, country, products = [], logisti
                                     value={userProfile.location}
                                     onChange={e => setUserProfile({ ...userProfile, location: e.target.value })}
                                 />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">{TRANSLATIONS[lang].email}</label>
+                                    <input
+                                        type="email"
+                                        className="w-full p-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none"
+                                        value={userProfile.email}
+                                        onChange={e => setUserProfile({ ...userProfile, email: e.target.value })}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">{TRANSLATIONS[lang].phone}</label>
+                                    <input
+                                        type="tel"
+                                        className="w-full p-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none"
+                                        value={userProfile.phone}
+                                        onChange={e => setUserProfile({ ...userProfile, phone: e.target.value })}
+                                    />
+                                </div>
                             </div>
                             <div>
                                 <div className="flex justify-between items-center mb-1">

@@ -1,12 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { getAgriAdvice } from '../services/geminiService';
-import { Send, Bot, Loader2, Mic, StopCircle, Radio, Volume2, Globe, ExternalLink, MapPin, Brain, MessageSquare, ChevronLeft, X } from 'lucide-react';
+import { getAgriAdvice, analyzePlantDisease } from '../services/geminiService';
+import { Send, Bot, Loader2, Mic, StopCircle, Radio, Volume2, Globe, ExternalLink, MapPin, Brain, MessageSquare, ChevronLeft, X, Camera, Sparkles } from 'lucide-react';
 import { GoogleGenAI, LiveServerMessage, Modality } from "@google/genai";
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
   sources?: { title: string; uri: string; type?: 'web' | 'map' }[];
+  image?: string; // Base64 image data
 }
 
 interface AiAssistantProps {
@@ -46,6 +47,7 @@ const AiAssistant: React.FC<AiAssistantProps> = ({ initialMode = 'selection', on
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Voice State
@@ -130,11 +132,48 @@ const AiAssistant: React.FC<AiAssistantProps> = ({ initialMode = 'selection', on
     setIsLoading(false);
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Read file as base64
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const base64Image = event.target?.result as string;
+
+      // Add user message with image
+      setMessages(prev => [...prev, {
+        role: 'user',
+        content: 'Please analyze this plant image and tell me if there are any diseases.',
+        image: base64Image
+      }]);
+
+      setIsLoading(true);
+
+      // Call Vision API
+      const responseText = await analyzePlantDisease(base64Image, file.type);
+
+      // Add assistant response
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: responseText
+      }]);
+
+      setIsLoading(false);
+    };
+    reader.readAsDataURL(file);
+
+    // Reset input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   // --- Voice Logic ---
   const startVoiceSession = async () => {
     try {
       setVoiceStatus('connecting');
-      const apiKey = process.env.API_KEY || process.env.VITE_GEMINI_API_KEY || '';
+      const apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
       if (!apiKey) {
         alert("Live Voice is unavailable: Missing API Key");
         setVoiceStatus('disconnected');
@@ -346,14 +385,14 @@ const AiAssistant: React.FC<AiAssistantProps> = ({ initialMode = 'selection', on
 
   // --- ACTIVE MODE CONTAINER ---
   return (
-    <div className="flex flex-col h-full bg-white relative">
-      {/* Shared Header */}
-      <div className="p-4 bg-white border-b border-slate-100 flex items-center justify-between shrink-0">
+    <div className="flex flex-col h-full flex-1 w-full bg-white relative">
+      {/* Shared Header - Redesigned to match "Kejah AI Assistant" style */}
+      <div className="p-4 bg-[#16a34a] flex items-center justify-between shrink-0 rounded-t-2xl md:rounded-t-none text-white">
         <div className="flex items-center gap-2">
           {!onClose && (
             <button
               onClick={handleBack}
-              className="p-2 hover:bg-slate-100 rounded-full text-slate-500 hover:text-slate-800 transition-all active:scale-90"
+              className="p-2 hover:bg-white/10 rounded-full transition-all active:scale-90"
               title="Back"
             >
               <ChevronLeft className="w-5 h-5" />
@@ -361,14 +400,14 @@ const AiAssistant: React.FC<AiAssistantProps> = ({ initialMode = 'selection', on
           )}
           <div className="flex items-center gap-2">
             {mode === 'voice' ? (
-              <div className="flex items-center gap-2 text-purple-700">
+              <div className="flex items-center gap-2">
                 <Radio className="w-5 h-5 animate-pulse" />
-                <span className="font-bold">Live Voice</span>
+                <span className="font-bold text-lg">Live Voice</span>
               </div>
             ) : (
-              <div className="flex items-center gap-2 text-green-700">
-                <Bot className="w-5 h-5" />
-                <span className="font-bold">Agri-Advisor</span>
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5" />
+                <span className="font-bold text-lg">AgriBridge AI Assistant</span>
               </div>
             )}
           </div>
@@ -376,13 +415,13 @@ const AiAssistant: React.FC<AiAssistantProps> = ({ initialMode = 'selection', on
 
         <div className="flex items-center gap-2">
           {mode === 'voice' && isVoiceConnected && (
-            <div className="flex items-center gap-2 bg-red-50 text-red-600 px-3 py-1 rounded-full text-xs font-bold border border-red-100 animate-pulse">
-              <div className="w-2 h-2 bg-red-600 rounded-full"></div>
+            <div className="flex items-center gap-2 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse">
+              <div className="w-2 h-2 bg-white rounded-full"></div>
               LIVE
             </div>
           )}
           {onClose && (
-            <button onClick={handleBack} className="p-2 hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-600 transition-all active:scale-90">
+            <button onClick={handleBack} className="p-2 hover:bg-white/10 rounded-full transition-all active:scale-90">
               <X className="w-5 h-5" />
             </button>
           )}
@@ -395,45 +434,58 @@ const AiAssistant: React.FC<AiAssistantProps> = ({ initialMode = 'selection', on
           <>
             {/* Tool buttons removed as requested */}
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-6 bg-slate-50/50">
+            <div className="flex-1 overflow-y-auto p-4 space-y-6 bg-slate-50">
               {messages.map((msg, idx) => (
-                <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`
-                    max-w-[85%] rounded-2xl p-4 text-sm shadow-sm relative group
-                    ${msg.role === 'user'
-                      ? 'bg-slate-900 text-white rounded-br-none'
-                      : 'bg-white border border-slate-200 text-slate-700 rounded-bl-none'}
-                  `}>
-                    <div className="whitespace-pre-wrap leading-relaxed">{msg.content}</div>
+                <div key={idx} className={`flex ${idx === 0 ? 'justify-center w-full mt-4' : msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  {idx === 0 ? (
+                    <div className="text-center max-w-sm px-6 py-4">
+                      <p className="text-slate-500 font-medium">👋 Hi! I'm your AI farming assistant.</p>
+                      <p className="text-slate-400 mt-2">Ask me about market trends, crop diseases, or storage tips.</p>
+                    </div>
+                  ) : (
+                    <div className={`
+                      max-w-[85%] rounded-2xl p-4 text-sm shadow-sm relative group whitespace-pre-wrap leading-relaxed
+                      ${msg.role === 'user'
+                        ? 'bg-slate-900 text-white rounded-br-none'
+                        : 'bg-white border border-slate-200 text-slate-700 rounded-bl-none'}
+                    `}>
+                      {msg.content}
 
-                    {msg.sources && msg.sources.length > 0 && (
-                      <div className="mt-4 pt-3 border-t border-slate-100">
-                        <div className="text-[10px] font-bold text-slate-400 mb-2 flex items-center gap-1 uppercase tracking-wider">
-                          {msg.sources.some(s => s.type === 'map')
-                            ? <><MapPin className="w-3 h-3" /> Locations</>
-                            : <><Globe className="w-3 h-3" /> Sources</>
-                          }
+                      {msg.image && (
+                        <div className="mt-3 relative rounded-xl overflow-hidden border border-slate-200/50 bg-black/5">
+                          <img src={msg.image} alt="Uploaded plant" className="w-full h-auto max-h-64 object-cover" />
                         </div>
-                        <div className="space-y-2">
-                          {msg.sources.map((source, i) => (
-                            <a
-                              key={i}
-                              href={source.uri}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className={`flex items-center gap-2 text-xs p-2 rounded transition-colors border
-                                    ${source.type === 'map'
-                                  ? 'bg-orange-50 text-orange-800 border-orange-100 hover:bg-orange-100'
-                                  : 'bg-blue-50 text-blue-800 border-blue-100 hover:bg-blue-100'}`}
-                            >
-                              {source.type === 'map' ? <MapPin className="w-3 h-3 shrink-0" /> : <ExternalLink className="w-3 h-3 shrink-0" />}
-                              <span className="truncate">{source.title || source.uri}</span>
-                            </a>
-                          ))}
+                      )}
+
+                      {msg.sources && msg.sources.length > 0 && (
+                        <div className="mt-4 pt-3 border-t border-slate-100">
+                          <div className="text-[10px] font-bold text-slate-400 mb-2 flex items-center gap-1 uppercase tracking-wider">
+                            {msg.sources.some(s => s.type === 'map')
+                              ? <><MapPin className="w-3 h-3" /> Locations</>
+                              : <><Globe className="w-3 h-3" /> Sources</>
+                            }
+                          </div>
+                          <div className="space-y-2">
+                            {msg.sources.map((source, i) => (
+                              <a
+                                key={i}
+                                href={source.uri}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={`flex items-center gap-2 text-xs p-2 rounded transition-colors border
+                                      ${source.type === 'map'
+                                    ? 'bg-orange-50 text-orange-800 border-orange-100 hover:bg-orange-100'
+                                    : 'bg-blue-50 text-blue-800 border-blue-100 hover:bg-blue-100'}`}
+                              >
+                                {source.type === 'map' ? <MapPin className="w-3 h-3 shrink-0" /> : <ExternalLink className="w-3 h-3 shrink-0" />}
+                                <span className="truncate">{source.title || source.uri}</span>
+                              </a>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
-                  </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               ))}
               {isLoading && (
@@ -447,21 +499,42 @@ const AiAssistant: React.FC<AiAssistantProps> = ({ initialMode = 'selection', on
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="p-4 bg-white border-t border-slate-200 shrink-0">
-              <div className="flex gap-2 relative">
+            <div className="p-4 bg-white border-t border-slate-100 shrink-0">
+              <div className="flex gap-3 relative items-center">
                 <input
-                  className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500 focus:bg-white transition-all pr-12"
-                  placeholder="Ask a question..."
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                  type="file"
+                  accept="image/*"
+                  ref={fileInputRef}
+                  className="hidden"
+                  onChange={handleImageUpload}
                 />
+
+                <div className="flex-1 relative border-2 border-[#16a34a] rounded-full flex items-center pr-1 overflow-hidden bg-white group focus-within:ring-2 focus-within:ring-green-100">
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isLoading}
+                    title="Upload Plant Image for Analysis"
+                    className="p-3 pl-4 text-slate-400 hover:text-green-600 transition-colors disabled:opacity-50"
+                  >
+                    <Camera className="w-5 h-5" />
+                  </button>
+                  <input
+                    className="w-full bg-transparent px-2 py-3 focus:outline-none text-slate-700 placeholder-slate-400"
+                    placeholder="Type a message..."
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                    disabled={isLoading}
+                  />
+                </div>
+
                 <button
                   onClick={handleSend}
                   disabled={isLoading || !input.trim()}
-                  className="absolute right-2 top-1.5 bottom-1.5 bg-green-600 text-white p-2 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:hover:bg-green-600 transition-all shadow-sm aspect-square flex items-center justify-center active:scale-90"
+                  className="w-12 h-12 bg-[#86efac] text-white rounded-full flex-shrink-0 flex items-center justify-center hover:bg-green-400 transition-colors shadow-sm disabled:opacity-50"
+                  aria-label="Send message"
                 >
-                  <Send className="w-4 h-4" />
+                  <Send className="w-5 h-5 -ml-1 translate-y-[1px] -rotate-45" />
                 </button>
               </div>
             </div>
@@ -531,7 +604,7 @@ const AiAssistant: React.FC<AiAssistantProps> = ({ initialMode = 'selection', on
           </div>
         )}
       </div>
-    </div>
+    </div >
   );
 };
 

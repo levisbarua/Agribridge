@@ -3,6 +3,7 @@ import { TransportRequest, UserRole, Country, LogisticsProvider, FleetVehicle, L
 import { generateMockData } from '../constants';
 import { Truck, MapPin, Package, CheckCircle2, Plus, X, ArrowRight, Settings, Search, Star, User, Loader2, CalendarClock, PenLine, Check, Map as MapIcon, List, Navigation } from 'lucide-react';
 import L from 'leaflet';
+import { RouteMap } from '../components/RouteMap';
 
 interface LogisticsProps {
   requests: TransportRequest[];
@@ -486,20 +487,33 @@ const Logistics: React.FC<LogisticsProps> = ({ requests, role, onRequestTranspor
                         <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
                           <MapPin className="w-3 h-3" /> {TRANSLATIONS[lang].pickupLocationPreview}
                         </h4>
-                        <span className="text-xs text-slate-400">{TRANSLATIONS[lang].poweredBy}</span>
+                        <span className="text-xs text-green-600 font-semibold flex items-center gap-1">
+                          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div> Live Tracking
+                        </span>
                       </div>
-                      <div className="bg-slate-100 rounded-lg overflow-hidden h-64 border border-slate-200 relative">
-                        {/* Note: Using Google Maps Embed API in 'search' mode as a robust fallback without API key requirement for demo */}
-                        <iframe
-                          width="100%"
-                          height="100%"
-                          frameBorder="0"
-                          style={{ border: 0 }}
-                          src={`https://maps.google.com/maps?q=${encodeURIComponent(req.origin + ', ' + country.name)}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
-                          title={`Map for ${req.origin}`}
-                        ></iframe>
-                        <div className="absolute bottom-2 left-2 bg-white/90 backdrop-blur px-3 py-1.5 rounded text-xs shadow-sm font-medium text-slate-700 pointer-events-none">
-                          {TRANSLATIONS[lang].from}: {req.origin}
+
+                      <div className="bg-slate-100 rounded-lg overflow-hidden h-[350px] border border-slate-200 relative">
+                        {req.originCoords && req.destinationCoords ? (
+                          <RouteMap
+                            originCoords={req.originCoords as [number, number]}
+                            destCoords={req.destinationCoords as [number, number]}
+                            originName={req.origin}
+                            destName={req.destination}
+                            driverName={req.assignedProviderName}
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-slate-400 bg-slate-50">
+                            No coordinates available for this route.
+                          </div>
+                        )}
+
+                        <div className="absolute bottom-4 left-4 z-[1000] bg-white/90 backdrop-blur px-3 py-2 rounded-lg text-xs shadow-md font-medium text-slate-700 pointer-events-none border border-slate-200">
+                          <div className="flex items-center gap-2 mb-1">
+                            <div className="w-2 h-2 rounded-full bg-blue-500"></div> From: {req.origin}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-orange-500"></div> To: {req.destination}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -520,7 +534,7 @@ const Logistics: React.FC<LogisticsProps> = ({ requests, role, onRequestTranspor
                 </div>
                 <div className="flex gap-2">
                   <span className={`px-2 py-1 rounded text-xs font-bold ${vehicle.status === 'Available' ? 'bg-green-100 text-green-700' :
-                      vehicle.status === 'Maintenance' ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700'
+                    vehicle.status === 'Maintenance' ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700'
                     }`}>
                     {vehicle.status}
                   </span>

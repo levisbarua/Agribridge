@@ -42,6 +42,8 @@ export interface TransportRequest {
   farmerName: string;
   origin: string;
   destination: string;
+  originCoords?: [number, number];
+  destinationCoords?: [number, number];
   goodsType: string;
   weightKg: number;
   status: 'PENDING' | 'ACCEPTED' | 'COMPLETED';
