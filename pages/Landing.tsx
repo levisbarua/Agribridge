@@ -153,7 +153,7 @@ const Landing: React.FC<LandingProps> = ({ onGetStarted, onNavigateLegal }) => {
 
                     {/* Mobile Menu Panel */}
                     {isMobileMenuOpen && (
-                        <div className="absolute top-full left-0 w-full bg-slate-900/95 backdrop-blur-md border-b border-white/10 py-4 px-6 flex flex-col gap-4 md:hidden shadow-2xl origin-top animate-in slide-in-from-top-2 duration-300">
+                        <div className="absolute top-full left-0 w-full bg-slate-900/95 backdrop-blur-md border-b border-white/10 py-4 px-6 flex flex-col gap-4 md:hidden shadow-2xl origin-top animate-in slide-in-from-top-2 duration-300 z-[100]">
                             <button onClick={() => { setIsMobileMenuOpen(false); document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }); }} className="text-white/80 hover:text-white font-medium text-lg text-left py-2 border-b border-white/10">About Us</button>
                             <button onClick={() => { setIsMobileMenuOpen(false); document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' }); }} className="text-white/80 hover:text-white font-medium text-lg text-left py-2 border-b border-white/10">FAQ</button>
                             <button onClick={() => { setIsMobileMenuOpen(false); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); }} className="text-white/80 hover:text-white font-medium text-lg text-left py-2 border-b border-white/10">Contact Us</button>
