@@ -222,7 +222,7 @@ const Landing: React.FC<LandingProps> = ({ onGetStarted, onNavigateLegal }) => {
 
                         <div className="relative w-full h-full max-w-sm sm:max-w-md mt-6 sm:mt-10 mx-auto">
                             {/* Main Image */}
-                            <div className="absolute top-0 right-4 sm:right-0 w-52 h-64 sm:w-64 sm:h-80 rounded-3xl overflow-hidden border-4 border-white/10 shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500 z-20">
+                            <div className="absolute top-0 right-2 sm:right-0 w-60 h-72 sm:w-64 sm:h-80 rounded-3xl overflow-hidden border-4 border-white/10 shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500 z-20">
                                 <img
                                     src="/assets/backgrounds/farm-2.jpg"
                                     alt="Farmers working"
@@ -236,7 +236,7 @@ const Landing: React.FC<LandingProps> = ({ onGetStarted, onNavigateLegal }) => {
                             </div>
 
                             {/* Secondary Image - Floating Left */}
-                            <div className="absolute top-28 sm:top-32 left-4 sm:-left-8 w-36 h-36 sm:w-48 sm:h-48 rounded-3xl overflow-hidden border-4 border-white/10 shadow-xl transform -rotate-6 hover:rotate-0 hover:z-30 transition-all duration-500 z-10 animate-[float_6s_ease-in-out_infinite]">
+                            <div className="absolute top-24 sm:top-32 left-0 sm:-left-8 w-40 h-40 sm:w-48 sm:h-48 rounded-3xl overflow-hidden border-4 border-white/10 shadow-xl transform -rotate-6 hover:rotate-0 hover:z-30 transition-all duration-500 z-10 animate-[float_6s_ease-in-out_infinite]">
                                 <img
                                     src="/assets/backgrounds/farm-6.jpg"
                                     alt="Fresh harvest"
@@ -245,7 +245,7 @@ const Landing: React.FC<LandingProps> = ({ onGetStarted, onNavigateLegal }) => {
                             </div>
 
                             {/* Third Image - Floating Bottom Right */}
-                            <div className="absolute bottom-12 sm:bottom-0 right-16 sm:right-12 w-32 h-32 sm:w-40 sm:h-40 rounded-full overflow-hidden border-4 border-white/10 shadow-lg transform rotate-12 hover:scale-105 transition-all duration-500 z-30 animate-[float_5s_ease-in-out_infinite_reverse]">
+                            <div className="absolute bottom-8 sm:bottom-0 right-8 sm:right-12 w-36 h-36 sm:w-40 sm:h-40 rounded-full overflow-hidden border-4 border-white/10 shadow-lg transform rotate-12 hover:scale-105 transition-all duration-500 z-30 animate-[float_5s_ease-in-out_infinite_reverse]">
                                 <img
                                     src="/assets/backgrounds/farm-5.jpg"
                                     alt="Logistics"
