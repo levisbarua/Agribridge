@@ -103,7 +103,7 @@ const Landing: React.FC<LandingProps> = ({ onGetStarted, onNavigateLegal }) => {
 
                     {/* Centered Sub-heading */}
                     <div className="absolute left-1/2 -translate-x-1/2 mt-1 w-full text-center pointer-events-none hidden lg:block">
-                        <span className="animate-blink-colors !text-green-400 font-extrabold tracking-widest uppercase text-base md:text-lg inline-block border-2 border-green-500/40 px-7 py-2.5 rounded-full bg-green-900/20 backdrop-blur-md shadow-[0_0_20px_rgba(34,197,94,0.20)] pointer-events-auto">
+                        <span className="animate-blink-colors font-extrabold tracking-widest uppercase text-base md:text-lg inline-block border-2 border-green-500/40 px-7 py-2.5 rounded-full bg-green-900/20 backdrop-blur-md shadow-[0_0_20px_rgba(34,197,94,0.20)] pointer-events-auto">
                             Revolutionizing African Agriculture With Power of AI.
                         </span>
                     </div>
@@ -169,8 +169,8 @@ const Landing: React.FC<LandingProps> = ({ onGetStarted, onNavigateLegal }) => {
                     {/* LEFT CONTENT */}
                     <div className="w-full lg:w-1/2 animate-in fade-in slide-in-from-bottom-8 duration-700 relative">
                         {/* Mobile Sub-heading */}
-                        <div className="lg:hidden mb-6">
-                            <span className="animate-blink-colors !text-green-400 font-extrabold tracking-wider uppercase text-xs inline-block border-[1.5px] border-green-500/60 px-4 py-2 rounded-full bg-slate-900/60 backdrop-blur-md shadow-[0_0_15px_rgba(34,197,94,0.30)] pointer-events-auto">
+                        <div className="lg:hidden mb-6 flex justify-center w-full">
+                            <span className="animate-blink-colors font-extrabold tracking-wider uppercase text-[10px] sm:text-[11px] inline-block border-[1.5px] border-green-500/60 px-3 py-1.5 sm:px-4 sm:py-2 text-center rounded-full bg-slate-900/60 backdrop-blur-md shadow-[0_0_15px_rgba(34,197,94,0.30)] pointer-events-auto">
                                 Revolutionizing African Agriculture With Power of AI.
                             </span>
                         </div>
