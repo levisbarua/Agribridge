@@ -18,7 +18,20 @@ const orderRoutes = require('./routes/orderRoutes');
 const app = express();
 
 // Middleware
-app.use(cors());
+const allowedOrigins = [
+    'https://agribridge-africa.vercel.app',
+    'http://localhost:3000',
+    'http://localhost:5173',
+];
+app.use(cors({
+    origin: function (origin, callback) {
+        // allow requests with no origin (like mobile apps, curl, Postman)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.includes(origin)) return callback(null, true);
+        return callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true,
+}));
 app.use(express.json());
 
 // Routes

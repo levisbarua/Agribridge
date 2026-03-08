@@ -1,6 +1,6 @@
 import { Product, TransportRequest, StorageFacility, Order } from '../types';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 // Helper to normalize MongoDB _id to id
 const mapId = (item: any) => {
