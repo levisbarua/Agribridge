@@ -31,7 +31,7 @@ export const getShelfLifePrediction = async (productName: string, harvestDate: s
     `;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-lite',
+      model: 'gemini-1.5-flash',
       contents: prompt,
       config: {
         systemInstruction: "Keep responses extremely short and fast.",
@@ -61,7 +61,7 @@ export const getAgriAdvice = async (
       // Use gemini-3-pro-preview for Deep Thinking
       // Setting thinkingBudget to max (32768) as requested for complex queries
       const response = await ai.models.generateContent({
-        model: 'gemini-3-pro-preview',
+        model: 'gemini-1.5-pro',
         contents: query,
         config: {
           thinkingConfig: { thinkingBudget: 32768 }
@@ -88,7 +88,7 @@ export const getAgriAdvice = async (
       }
 
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-1.5-flash',
         contents: query,
         config: config,
       });
@@ -113,7 +113,7 @@ export const getAgriAdvice = async (
     } else if (options.useSearch) {
       // Use gemini-3-flash-preview for Google Search Grounding
       const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
+        model: 'gemini-1.5-flash',
         contents: query,
         config: {
           tools: [{ googleSearch: {} }],
@@ -139,7 +139,7 @@ export const getAgriAdvice = async (
         `;
 
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-lite',
+        model: 'gemini-1.5-flash',
         contents: prompt,
         config: {
           systemInstruction: "Keep responses extremely short and fast. Bullet point lists.",
@@ -175,7 +175,7 @@ export const analyzePlantDisease = async (base64Image: string, mimeType: string,
     const base64Data = base64Image.split(',')[1] || base64Image;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-1.5-flash',
       contents: [
         { text: prompt },
         {
