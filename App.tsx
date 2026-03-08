@@ -15,15 +15,40 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import { UserRole, Product, TransportRequest, Language, Country, FleetVehicle, StorageFacility, CartItem, Order } from './types';
 import { AFRICAN_COUNTRIES, generateMockData } from './constants';
+import * as api from './services/api';
 
 const App: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [showLanding, setShowLanding] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    if (typeof window !== 'undefined') return localStorage.getItem('isAuthenticated') === 'true';
+    return false;
+  });
+  const [showLanding, setShowLanding] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('showLanding');
+      return stored !== null ? stored === 'true' : true;
+    }
+    return true;
+  });
   const [legalPage, setLegalPage] = useState<'privacy' | 'terms' | null>(null);
-  const [currentPage, setCurrentPage] = useState('home');
-  const [userRole, setUserRole] = useState<UserRole>('FARMER');
-  const [language, setLanguage] = useState<Language>('en');
-  const [selectedCountry, setSelectedCountry] = useState<Country>(AFRICAN_COUNTRIES[0]);
+  const [currentPage, setCurrentPage] = useState(() => {
+    if (typeof window !== 'undefined') return localStorage.getItem('currentPage') || 'home';
+    return 'home';
+  });
+  const [userRole, setUserRole] = useState<UserRole>(() => {
+    if (typeof window !== 'undefined') return (localStorage.getItem('userRole') as UserRole) || 'FARMER';
+    return 'FARMER';
+  });
+  const [language, setLanguage] = useState<Language>(() => {
+    if (typeof window !== 'undefined') return (localStorage.getItem('language') as Language) || 'en';
+    return 'en';
+  });
+  const [selectedCountry, setSelectedCountry] = useState<Country>(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('selectedCountry');
+      if (stored) return JSON.parse(stored);
+    }
+    return AFRICAN_COUNTRIES[0];
+  });
 
   // Data State
   const [products, setProducts] = useState<Product[]>([]);
@@ -54,33 +79,19 @@ const App: React.FC = () => {
     }
   }, [darkMode]);
 
-  // Initialize data when country changes
+  // Persist State logic
+  useEffect(() => {
+    localStorage.setItem('isAuthenticated', String(isAuthenticated));
+    localStorage.setItem('showLanding', String(showLanding));
+    localStorage.setItem('currentPage', currentPage);
+    localStorage.setItem('userRole', userRole);
+    localStorage.setItem('language', language);
+    localStorage.setItem('selectedCountry', JSON.stringify(selectedCountry));
+  }, [isAuthenticated, showLanding, currentPage, userRole, language, selectedCountry]);
+
+  // Initialize static/mock data (prices and fleet) when country changes
   useEffect(() => {
     const data = generateMockData(selectedCountry);
-    setProducts(data.products);
-
-    // Add an assigned trip for demonstration
-    const mockLogistics = [
-      ...data.logistics,
-      {
-        id: 't3',
-        farmerId: 'f1',
-        farmerName: 'John Doe',
-        origin: selectedCountry.locations[0],
-        destination: selectedCountry.locations[1] || 'City Center',
-        originCoords: [selectedCountry.coordinates.lat, selectedCountry.coordinates.lng],
-        destinationCoords: [selectedCountry.coordinates.lat - 0.5, selectedCountry.coordinates.lng + 0.8],
-        goodsType: 'Grains',
-        weightKg: 2000,
-        status: 'ACCEPTED' as const,
-        priceOffer: 8500,
-        assignedProviderId: 'lp1', // Current user
-        assignedProviderName: 'Swift Haulage'
-      }
-    ];
-    setLogistics(mockLogistics);
-
-    setStorageFacilities(data.storage);
     setMarketPrices(data.marketPrices);
 
     // Initialize Fleet based on country locations (mock data)
@@ -89,25 +100,45 @@ const App: React.FC = () => {
       { id: '2', name: 'Mitsubishi Canter', plate: 'KCA 456B', capacity: '3 Tons', location: selectedCountry.locations[1] || selectedCountry.locations[0], status: 'Maintenance' },
       { id: '3', name: 'Toyota Hilux', plate: 'KDD 789C', capacity: '1 Ton', location: selectedCountry.locations[3] || selectedCountry.locations[0], status: 'Available' }
     ]);
-
-    // Initialize mock orders
-    setOrders([
-      { id: 'o1', buyerId: 'me', farmerId: 'f1', productName: 'Fresh Tomatoes (50kg)', amount: 1500, status: 'SHIPPED', date: '2024-05-20' },
-      { id: 'o2', buyerId: 'me', farmerId: 'f2', productName: 'Yellow Maize (20 bags)', amount: 60000, status: 'PROCESSING', date: '2024-05-21' },
-      { id: 'o3', buyerId: 'b2', farmerId: 'me', productName: 'Potatoes (100kg)', amount: 3500, status: 'DELIVERED', date: '2024-05-18' },
-    ]);
   }, [selectedCountry]);
+
+  // Fetch real data from MongoDB API
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [productsData, logisticsData, storageData, ordersData] = await Promise.all([
+          api.fetchProducts(),
+          api.fetchTransportRequests(),
+          api.fetchStorageFacilities(),
+          api.fetchOrders()
+        ]);
+        setProducts(productsData.reverse());
+        setLogistics(logisticsData.reverse());
+        setStorageFacilities(storageData.reverse());
+        setOrders(ordersData.reverse());
+      } catch (error) {
+        console.error('Failed to load data from API:', error);
+      }
+    };
+    loadData();
+  }, []);
 
   const handleLogin = (role: UserRole) => {
     setUserRole(role);
     setIsAuthenticated(true);
+    setShowLanding(false);
     setCurrentPage('home');
   };
 
   const handleLogout = () => {
+    // Clear persisted session data
+    ['isAuthenticated', 'showLanding', 'currentPage', 'userRole'].forEach(key =>
+      localStorage.removeItem(key)
+    );
     setIsAuthenticated(false);
     setShowLanding(true);
     setUserRole('FARMER');
+    setCurrentPage('home');
     setCart([]);
   };
 
@@ -116,16 +147,29 @@ const App: React.FC = () => {
     setCurrentPage('home'); // Redirect to dashboard to see role-specific view
   };
 
-  const handleAddProduct = (newProduct: Product) => {
-    setProducts([newProduct, ...products]);
+  const handleAddProduct = async (newProduct: Product) => {
+    try {
+      const created = await api.createProduct(newProduct);
+      setProducts([created, ...products]);
+    } catch (err) { console.error(err); }
   };
 
-  const handleRequestTransport = (req: TransportRequest) => {
-    setLogistics([req, ...logistics]);
+  const handleRequestTransport = async (req: TransportRequest) => {
+    try {
+      const created = await api.createTransportRequest(req);
+      setLogistics([created, ...logistics]);
+    } catch (err) { console.error(err); }
   };
 
-  const handleUpdateLogistics = (updatedRequest: TransportRequest) => {
-    setLogistics(prev => prev.map(req => req.id === updatedRequest.id ? updatedRequest : req));
+  const handleUpdateLogistics = async (updatedRequest: TransportRequest) => {
+    try {
+      const updated = await api.updateTransportRequestStatus(updatedRequest.id, {
+        status: updatedRequest.status,
+        assignedProviderId: updatedRequest.assignedProviderId,
+        assignedProviderName: updatedRequest.assignedProviderName
+      });
+      setLogistics(prev => prev.map(req => req.id === updated.id ? updated : req));
+    } catch (err) { console.error(err); }
   };
 
   const handleAddVehicle = (vehicle: FleetVehicle) => {
@@ -136,12 +180,18 @@ const App: React.FC = () => {
     setFleet(prev => prev.map(v => v.id === updatedVehicle.id ? updatedVehicle : v));
   };
 
-  const handleAddFacility = (facility: StorageFacility) => {
-    setStorageFacilities([...storageFacilities, facility]);
+  const handleAddFacility = async (facility: StorageFacility) => {
+    try {
+      const created = await api.createStorageFacility(facility);
+      setStorageFacilities([...storageFacilities, created]);
+    } catch (err) { console.error(err); }
   };
 
-  const handleUpdateFacility = (updatedFacility: StorageFacility) => {
-    setStorageFacilities(prev => prev.map(f => f.id === updatedFacility.id ? updatedFacility : f));
+  const handleUpdateFacility = async (updatedFacility: StorageFacility) => {
+    try {
+      const updated = await api.updateStorageFacilityCapacity(updatedFacility.id, updatedFacility.availableKg);
+      setStorageFacilities(prev => prev.map(f => f.id === updated.id ? updated : f));
+    } catch (err) { console.error(err); }
   };
 
   // Cart Handlers
@@ -179,21 +229,28 @@ const App: React.FC = () => {
     setCurrentPage('payment');
   };
 
-  const handlePaymentComplete = () => {
-    // Create orders from cart items
-    const newOrders: Order[] = cart.map(item => ({
-      id: Math.random().toString(36).substr(2, 9),
-      buyerId: 'me', // Assuming current user is buyer
-      farmerId: item.farmerId,
-      productName: `${item.name} (${item.cartQuantity} ${item.unit})`,
-      amount: item.price * item.cartQuantity,
-      status: 'PROCESSING',
-      date: new Date().toISOString().split('T')[0]
-    }));
+  const handlePaymentComplete = async () => {
+    // Create orders from cart items via API
+    try {
+      const newOrdersPromises = cart.map(item => api.createOrder({
+        buyerId: 'me', // Assuming current user is buyer
+        farmerId: item.farmerId,
+        productName: `${item.name} (${item.cartQuantity} ${item.unit})`,
+        amount: item.price * item.cartQuantity,
+        status: 'PROCESSING'
+      }));
 
-    setOrders(prev => [...newOrders, ...prev]);
-    setCart([]);
-    setCurrentPage('home');
+      const createdOrders = await Promise.all(newOrdersPromises);
+
+      setOrders(prev => [...createdOrders, ...prev]);
+      setCart([]);
+      setCurrentPage('home');
+    } catch (error) {
+      console.error('Failed to create orders:', error);
+      alert('Order placed locally, failed to save to server.');
+      setCart([]);
+      setCurrentPage('home');
+    }
   };
 
   if (!isAuthenticated) {
