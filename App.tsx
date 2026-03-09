@@ -89,6 +89,59 @@ const App: React.FC = () => {
     localStorage.setItem('selectedCountry', JSON.stringify(selectedCountry));
   }, [isAuthenticated, showLanding, currentPage, userRole, language, selectedCountry]);
 
+  // Sync state TO hash (when state changes programmatically)
+  useEffect(() => {
+    const currentHash = window.location.hash.replace('#', '');
+    let desiredHash = '';
+    
+    if (legalPage) desiredHash = legalPage;
+    else if (showLanding) desiredHash = 'landing';
+    else if (!isAuthenticated) desiredHash = 'auth';
+    else desiredHash = currentPage;
+    
+    if (currentHash !== desiredHash) {
+      window.location.hash = desiredHash;
+    }
+  }, [showLanding, isAuthenticated, currentPage, legalPage]);
+
+  // Sync hash TO state (when user clicks back/forward)
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '');
+      
+      if (hash === 'landing') {
+        setShowLanding(true);
+        setIsAuthenticated(false);
+        setLegalPage(null);
+      } else if (hash === 'auth') {
+        setShowLanding(false);
+        setIsAuthenticated(false);
+        setLegalPage(null);
+      } else if (hash === 'privacy') {
+        setLegalPage('privacy');
+      } else if (hash === 'terms') {
+        setLegalPage('terms');
+      } else if (!hash) {
+        // If the hash is empty (e.g., visiting the root domain directly)
+        // Only show landing if they aren't authenticated natively
+        if (!isAuthenticated) {
+          setShowLanding(true);
+          setLegalPage(null);
+        }
+      } else if (isAuthenticated && hash) {
+        setCurrentPage(hash);
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    
+    // Also run once on mount to catch the INITIAL hash correctly, 
+    // avoiding the race condition where React doesn't know about a shared `#landing` link
+    handleHashChange();
+
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, [isAuthenticated]);
+
   // Initialize static/mock data (prices and fleet) when country changes
   useEffect(() => {
     const data = generateMockData(selectedCountry);
