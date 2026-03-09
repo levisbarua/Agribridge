@@ -117,19 +117,28 @@ const AiAssistant: React.FC<AiAssistantProps> = ({ initialMode = 'selection', on
     setMessages(prev => [...prev, { role: 'user', content: userMsg }]);
     setIsLoading(true);
 
-    const response = await getAgriAdvice(userMsg, {
-      useSearch: false,
-      useMaps: false,
-      useThinking: false,
-      location: userLocation
-    });
+    try {
+      const response = await getAgriAdvice(userMsg, {
+        useSearch: false,
+        useMaps: false,
+        useThinking: false,
+        location: userLocation
+      });
 
-    setMessages(prev => [...prev, {
-      role: 'assistant',
-      content: response.text || "I'm having trouble answering right now.",
-      sources: response.sources
-    }]);
-    setIsLoading(false);
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: response.text || "I'm having trouble answering right now.",
+        sources: response.sources
+      }]);
+    } catch (err) {
+      console.error('Chat error:', err);
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: "Sorry, I ran into an error. Please try again."
+      }]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -150,16 +159,24 @@ const AiAssistant: React.FC<AiAssistantProps> = ({ initialMode = 'selection', on
 
       setIsLoading(true);
 
-      // Call Vision API
-      const responseText = await analyzePlantDisease(base64Image, file.type);
+      try {
+        // Call Vision API
+        const responseText = await analyzePlantDisease(base64Image, file.type);
 
-      // Add assistant response
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: responseText
-      }]);
-
-      setIsLoading(false);
+        // Add assistant response
+        setMessages(prev => [...prev, {
+          role: 'assistant',
+          content: responseText || "Sorry, I couldn't analyze the image."
+        }]);
+      } catch (err) {
+        console.error('Image analysis error:', err);
+        setMessages(prev => [...prev, {
+          role: 'assistant',
+          content: "Sorry, I couldn't analyze the image. Please try again."
+        }]);
+      } finally {
+        setIsLoading(false);
+      }
     };
     reader.readAsDataURL(file);
 

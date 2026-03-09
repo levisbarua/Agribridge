@@ -129,21 +129,21 @@ export const getAgriAdvice = async (
 
       return { text: response.text, sources: uniqueSources as { title: string, uri: string, type: 'web' }[] };
     } else {
-      // Use flash-lite for fast chat (No Grounding)
+      // Use flash for fast chat (No Grounding)
       const prompt = `
         You are an agricultural expert assistant for "AgriBridge Africa". 
         Your goal is to help smallholder farmers with crop advice, market insights, and logistics tips.
         User Query: ${query}
         
-        Keep the answer practical, simple, and encouraging. Max 100 words.
+        Keep the answer practical, simple, and encouraging. Max 200 words.
         `;
 
       const response = await ai.models.generateContent({
         model: 'gemini-1.5-flash',
         contents: prompt,
         config: {
-          systemInstruction: "Keep responses extremely short and fast. Bullet point lists.",
-          maxOutputTokens: 100,
+          systemInstruction: "Keep responses short and helpful. Use bullet points where appropriate.",
+          maxOutputTokens: 300,
         }
       });
       return { text: response.text };
@@ -214,7 +214,7 @@ export const getMarketInsights = async (marketPrices: any[], countryName: string
     `;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-lite',
+      model: 'gemini-1.5-flash',
       contents: prompt,
       config: {
         systemInstruction: "Keep responses extremely short and fast.",
@@ -240,7 +240,7 @@ export const enhanceUserBio = async (currentBio: string, role: string, name: str
     `;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-lite',
+      model: 'gemini-1.5-flash',
       contents: prompt,
       config: {
         systemInstruction: "Keep responses extremely short and fast.",
