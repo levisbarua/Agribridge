@@ -89,56 +89,29 @@ const App: React.FC = () => {
     localStorage.setItem('selectedCountry', JSON.stringify(selectedCountry));
   }, [isAuthenticated, showLanding, currentPage, userRole, language, selectedCountry]);
 
-  // Sync state TO hash (when state changes programmatically)
+  // Sync current in-app page TO hash — only when user is authenticated
+  // This lets the back button work between in-app pages (e.g. Marketplace → Dashboard)
+  // Auth/Landing states are NOT put into the hash; localStorage handles those.
   useEffect(() => {
-    const currentHash = window.location.hash.replace('#', '');
-    let desiredHash = '';
-    
-    if (legalPage) desiredHash = legalPage;
-    else if (showLanding) desiredHash = 'landing';
-    else if (!isAuthenticated) desiredHash = 'auth';
-    else desiredHash = currentPage;
-    
-    if (currentHash !== desiredHash) {
-      window.location.hash = desiredHash;
+    if (!isAuthenticated) return;
+    const newHash = currentPage;
+    if (window.location.hash.replace('#', '') !== newHash) {
+      window.location.hash = newHash;
     }
-  }, [showLanding, isAuthenticated, currentPage, legalPage]);
+  }, [isAuthenticated, currentPage]);
 
-  // Sync hash TO state (when user clicks back/forward)
+  // Sync hash TO in-app page — fires when user presses browser Back/Forward
   useEffect(() => {
     const handleHashChange = () => {
+      if (!isAuthenticated) return; // Ignore hash changes when logged out
       const hash = window.location.hash.replace('#', '');
-      
-      if (hash === 'landing') {
-        setShowLanding(true);
-        setIsAuthenticated(false);
-        setLegalPage(null);
-      } else if (hash === 'auth') {
-        setShowLanding(false);
-        setIsAuthenticated(false);
-        setLegalPage(null);
-      } else if (hash === 'privacy') {
-        setLegalPage('privacy');
-      } else if (hash === 'terms') {
-        setLegalPage('terms');
-      } else if (!hash) {
-        // If the hash is empty (e.g., visiting the root domain directly)
-        // Only show landing if they aren't authenticated natively
-        if (!isAuthenticated) {
-          setShowLanding(true);
-          setLegalPage(null);
-        }
-      } else if (isAuthenticated && hash) {
+      const validPages = ['home', 'marketplace', 'logistics', 'storage', 'profile', 'settings', 'about', 'privacy', 'terms', 'payment'];
+      if (hash && validPages.includes(hash)) {
         setCurrentPage(hash);
       }
     };
 
     window.addEventListener('hashchange', handleHashChange);
-    
-    // Also run once on mount to catch the INITIAL hash correctly, 
-    // avoiding the race condition where React doesn't know about a shared `#landing` link
-    handleHashChange();
-
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, [isAuthenticated]);
 
